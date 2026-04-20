@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,12 +13,14 @@ using Microsoft.Win32;
 namespace CarTuner
 {
     public partial class MainWindow : Window
-    {
+    {   // setting variables 
         private const int BaseTopSpeed = 230;
 
         private SoundPlayer upgradeSound;
         private SoundPlayer errorSound;
         private bool soundEnabled = true;
+
+        // observable UI updated
 
         public ObservableCollection<CarPart> AvailableParts { get; } =
             new ObservableCollection<CarPart>();
@@ -37,12 +40,12 @@ namespace CarTuner
         private void LoadSounds()
         {
             try
-            {
+            {    // lacation of where the audio is 
                 var upgradeRes = Application.GetResourceStream(new Uri("Sounds/upgrade.wav", UriKind.Relative));
                 if (upgradeRes != null)
                 {
                     upgradeSound = new SoundPlayer(upgradeRes.Stream);
-                    upgradeSound.Load();
+                    upgradeSound.Load(); // pre loading sound
                 }
 
                 var errorRes = Application.GetResourceStream(new Uri("Sounds/error.wav", UriKind.Relative));
@@ -56,20 +59,20 @@ namespace CarTuner
         }
 
         private void PlaySound(SoundPlayer sound)
-        {
+        {   // prevent app from craching when sounf not avaiable
             if (!soundEnabled || sound == null) return;
-            try { sound.Play(); } catch { }
+            try { sound.Play(); } catch { } // ignore 
         }
 
         private void SoundToggle_Changed(object sender, RoutedEventArgs e)
-        {
+        {    // sound off and on button 
             if (SoundToggle == null) return;
             soundEnabled = SoundToggle.IsChecked == true;
             SoundToggle.Content = soundEnabled ? "Sound On" : "Sound Off";
         }
 
         private void SeedParts()
-        {
+        {   // assining stats to the car parts
             AvailableParts.Add(new Engine
             {
                 Name = "Tuned 4-Cylinder Engine",
@@ -204,51 +207,53 @@ namespace CarTuner
                 PistonCount = 4, Category = "Brakes",
                 ImagePath = "Images/brake_kit.png"
             });
-        }
 
+            // can add more car part 
+        }
+        // workshop tab
         private void GoToWorkshop_Click(object sender, RoutedEventArgs e)
         {
             MainTabs.SelectedIndex = 1;
         }
-
+        // garage tab
         private void GoToGarage_Click(object sender, RoutedEventArgs e)
         {
             MainTabs.SelectedIndex = 2;
         }
-
+        // checks what part is added and that it available
         private void AvailablePartsListBox_SelectionChanged(object sender,
             System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (AvailablePartsListBox.SelectedItem is CarPart part)
                 ShowSinglePreview(part);
         }
-
+        // see what part u click to show picture of the part 
         private void SelectedPartsListBox_SelectionChanged(object sender,
             System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (SelectedPartsListBox.SelectedItem is CarPart)
                 ShowBuildPreview();
         }
-
+        // image shower 
         private void ShowSinglePreview(CarPart part)
-        {
+        {   // showes selected part picture when clicked and not hole build
             BuildPreviewScroll.Visibility = Visibility.Collapsed;
             ImageInfoTextBlock.Visibility = Visibility.Collapsed;
             try
-            {
+            {   // loading images from path 
                 PreviewImage.Source = new BitmapImage(new Uri(part.ImagePath, UriKind.Relative));
                 PreviewImage.Visibility = Visibility.Visible;
             }
             catch
-            {
+            {   // if image is missing hiding so no blank error
                 PreviewImage.Visibility = Visibility.Collapsed;
             }
         }
 
         private void ShowBuildPreview()
-        {
+        {   // to show full preview 
             PreviewImage.Visibility = Visibility.Collapsed;
-
+            // check is build is empty 
             if (SelectedParts.Count == 0)
             {
                 BuildPreviewScroll.Visibility = Visibility.Collapsed;
@@ -259,11 +264,12 @@ namespace CarTuner
             ImageInfoTextBlock.Visibility = Visibility.Collapsed;
             BuildPreviewScroll.Visibility = Visibility.Visible;
             BuildPartsPanel.Children.Clear();
-
+            // loop thought every part is selected parts
             foreach (var part in SelectedParts)
             {
                 try
-                {
+                {   
+                    // crating image look and sizes 
                     var img = new System.Windows.Controls.Image();
                     img.Source = new BitmapImage(new Uri(part.ImagePath, UriKind.Relative));
                     img.Width = 120;
@@ -281,18 +287,18 @@ namespace CarTuner
             if (AvailablePartsListBox.SelectedItem is CarPart part)
             {
                 if (SelectedParts.Contains(part))
-                {
+                {   // erros to show added part already
                     PlaySound(errorSound);
                     MessageBox.Show("You already added this part.",
                         "Duplicate part", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-
+                //makes sure one prat in each catergory is added 
                 bool oneOnly = part is Engine || part is Exhaust || part is Wheel
                     || part is Turbo || part is Intake || part is ECUTune || part is Intercooler;
 
                 if (oneOnly)
-                {
+                {   // romoving part when in the catergory when the other part gwt added 
                     CarPart existing = null;
                     foreach (var p in SelectedParts)
                     {
@@ -305,36 +311,39 @@ namespace CarTuner
                     if (existing != null)
                         SelectedParts.Remove(existing);
                 }
-
+                // method to update everything 
                 SelectedParts.Add(part);
                 UpdateStats();
                 ShowBuildPreview();
                 PlaySound(upgradeSound);
             }
             else
-            {
+            {   // error when no part it tryed to be added 
                 PlaySound(errorSound);
                 MessageBox.Show("Please select a part first.",
                     "No part selected", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-
+        // romoving selected part from build 
         private void RemovePartButton_Click(object sender, RoutedEventArgs e)
-        {
+        {   // finding the seletec part 
             if (SelectedPartsListBox.SelectedItem is CarPart part)
-            {
-                SelectedParts.Remove(part);
+
+            {   // updated everything when part is romoved 
+
+                SelectedParts.Remove(part);  
                 UpdateStats();
                 ShowBuildPreview();
             }
             else
             {
+                // erroed message 
                 PlaySound(errorSound);
                 MessageBox.Show("Select a part from your build to remove it.",
                     "No part selected", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
-
+        // restart everything and clear the build 
         private void ClearBuild_Click(object sender, RoutedEventArgs e)
         {
             SelectedParts.Clear();
@@ -344,47 +353,49 @@ namespace CarTuner
 
         private void UpdateStats()
         {
+            // calculates totals from selected parts
             int speedBonus = SelectedParts.Sum(p => p.SpeedBonus);
             decimal totalCost = SelectedParts.Sum(p => p.Cost);
 
             CurrentSpeedTextBlock.Text = (BaseTopSpeed + speedBonus) + " km/h";
             TotalCostTextBlock.Text = totalCost.ToString("C");
         }
+        // saves as raw json to computer and logic 
 
         private void SaveToGarage_Click(object sender, RoutedEventArgs e)
         {
             if (!SelectedParts.Any())
-            {
+            {   // check if anything was added in the first place 
                 MessageBox.Show("Add at least one part before saving.",
                     "Nothing to save", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-
+            // the name of the file / build when saved 
             string buildName = string.IsNullOrWhiteSpace(BuildNameTextBox.Text)
                 ? "My Build" : BuildNameTextBox.Text.Trim();
 
             int speedBonus = SelectedParts.Sum(p => p.SpeedBonus);
             decimal totalCost = SelectedParts.Sum(p => p.Cost);
             int topSpeed = BaseTopSpeed + speedBonus;
-
+            // windows save dialaog 
             var dialog = new SaveFileDialog
             {
                 Title = "Save car build",
                 Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
                 FileName = buildName + ".json"
             };
-
+            // when users click save file 
             if (dialog.ShowDialog() == true)
             {
                 try
-                {
+                {   // json builder and writed file 
                     string json = BuildJson(buildName, speedBonus, totalCost, topSpeed);
                     File.WriteAllText(dialog.FileName, json, Encoding.UTF8);
                     MessageBox.Show("Build saved!", "Saved",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
-                {
+                {   // error
                     MessageBox.Show("Error saving:\n" + ex.Message,
                         "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -407,8 +418,9 @@ namespace CarTuner
 
         private string BuildJson(string buildName, int speedBonus,
             decimal totalCost, int topSpeed)
-        {
+        {    //checking inherited objects 
             var sb = new StringBuilder();
+            // saving all data in file 
             sb.AppendLine("{");
             sb.AppendLine("  \"BuildName\": \"" + EscapeJson(buildName) + "\",");
             sb.AppendLine("  \"BaseTopSpeed\": " + BaseTopSpeed + ",");
@@ -445,7 +457,7 @@ namespace CarTuner
             if (string.IsNullOrEmpty(text)) return "";
             return text.Replace("\\", "\\\\").Replace("\"", "\\\"");
         }
-
+        // laod raw json from saved build 
         private void LoadFromGarage_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new OpenFileDialog

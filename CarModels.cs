@@ -2,6 +2,7 @@ namespace CarTuner
 {
     public abstract class CarPart
     {
+        // properties inherited
         public string Name { get; set; }
         public int SpeedBonus { get; set; }
         public decimal Cost { get; set; }
@@ -13,7 +14,7 @@ namespace CarTuner
             return Name + " (+" + SpeedBonus + " speed, " + Cost.ToString("C") + ")";
         }
     }
-
+    // inheritance
     public class Engine : CarPart
     {
         public int CylinderCount { get; set; }
@@ -58,4 +59,5 @@ namespace CarTuner
     {
         public int PistonCount { get; set; }
     }
+    // Can Add more Car Part 
 }

@@ -14,3 +14,11 @@ C:\Users\ATU_Computing_2025\Downloads\New CarTuner PRojedc\CarTuner\CarTuner\obj
 C:\Users\ATU_Computing_2025\Downloads\New CarTuner PRojedc\CarTuner\CarTuner\obj\Debug\CarTuner.exe
 C:\Users\ATU_Computing_2025\Downloads\New CarTuner PRojedc\CarTuner\CarTuner\obj\Debug\CarTuner.pdb
 C:\Users\ATU_Computing_2025\Downloads\New CarTuner PRojedc\CarTuner\CarTuner\obj\Debug\CarTuner.csproj.SuggestedBindingRedirects.cache
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\CarTuner.csproj.AssemblyReference.cache
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\CarTuner.csproj.SuggestedBindingRedirects.cache
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\MainWindow.g.cs
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\App.g.cs
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\CarTuner_MarkupCompile.cache
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\CarTuner_MarkupCompile.lref
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\CarTuner.exe
+C:\Users\ATU_Computing_2025\Source\Repos\OOD_Project_2026\obj\Debug\CarTuner.pdb
